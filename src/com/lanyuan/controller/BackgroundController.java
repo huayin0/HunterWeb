@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,15 +31,17 @@ import com.lanyuan.util.Common;
 
 /**
  * 进行管理后台框架界面的类
- * @author lanyuan
- * 2013-11-19
+ * 
+ * @author lanyuan 2013-11-19
  * @Email: mmm333zzz520@163.com
  * @version 1.0v
  */
 @Controller
-@RequestMapping ("/background/")
+@RequestMapping("/background/")
 public class BackgroundController
 {
+	private Logger log = Logger.getLogger(this.getClass());
+
 	@Autowired
 	private UserDao userDao;
 	@Autowired
@@ -47,99 +50,121 @@ public class BackgroundController
 	private ResourcesService resourcesService;
 	@Autowired
 	private AuthenticationManager myAuthenticationManager;
+
 	/**
 	 * @return
 	 */
-	@RequestMapping ("login")
-	public String login(Model model,HttpServletRequest request)
+	@RequestMapping("login")
+	public String login(Model model, HttpServletRequest request)
 	{
-		//重新登录时销毁该用户的Session
+		log.info("--------------------------------------------!!!");
+		// 重新登录时销毁该用户的Session
 		Object o = request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
-		if(null != o){
+		if (null != o)
+		{
 			request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
 		}
 		return "/background/framework/login";
 	}
-	
-	@RequestMapping ("loginCheck")
-	public String loginCheck(String username,String password,HttpServletRequest request){
-		try {
-			if (!request.getMethod().equals("POST")) {
-				request.setAttribute("error","支持POST方法提交！");
+
+	@RequestMapping("loginCheck")
+	public String loginCheck(String username, String password,
+			HttpServletRequest request)
+	{
+		try
+		{
+			if (!request.getMethod().equals("POST"))
+			{
+				request.setAttribute("error", "支持POST方法提交！");
 			}
-			if (Common.isEmpty(username) || Common.isEmpty(password)) {
-				request.setAttribute("error","用户名或密码不能为空！");
+			if (Common.isEmpty(username) || Common.isEmpty(password))
+			{
+				request.setAttribute("error", "用户名或密码不能为空！");
 				return "/background/framework/login";
 			}
 			// 验证用户账号与密码是否正确
 			User users = this.userDao.querySingleUser(username);
-			if (users == null || !users.getUserPassword().equals(password)) {
+			if (users == null || !users.getUserPassword().equals(password))
+			{
 				request.setAttribute("error", "用户或密码不正确！");
-			    return "/background/framework/login";
+				return "/background/framework/login";
 			}
 			Authentication authentication = myAuthenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-			SecurityContext securityContext = SecurityContextHolder.getContext();
+					.authenticate(new UsernamePasswordAuthenticationToken(
+							username, password));
+			SecurityContext securityContext = SecurityContextHolder
+					.getContext();
 			securityContext.setAuthentication(authentication);
-			HttpSession session = request.getSession(true);  
-		    session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);  
-		    // 当验证都通过后，把用户信息放在session里
+			HttpSession session = request.getSession(true);
+			session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+			// 当验证都通过后，把用户信息放在session里
 			request.getSession().setAttribute("userSession", users);
 			// 记录登录信息
 			UserLoginList userLoginList = new UserLoginList();
 			userLoginList.setUserId(users.getUserId());
 			userLoginList.setLoginIp(Common.toIpAddr(request));
 			userLoginListService.add(userLoginList);
-		} catch (AuthenticationException ae) {  
+		}
+		catch (AuthenticationException ae)
+		{
 			request.setAttribute("error", "登录异常，请联系管理员！");
-		    return "/background/framework/login";
+			return "/background/framework/login";
 		}
 		return "redirect:index.html";
 	}
-	
+
 	/**
 	 * @return
 	 */
-	@RequestMapping ("index")
+	@RequestMapping("index")
 	public String index(Model model)
 	{
+		log.info("--------------------------------------------!!!");
+		log.error("---------1eeerr----------------------------------!!!");
 		return "/background/framework/main";
 	}
-	
-	@RequestMapping ("top")
+
+	@RequestMapping("top")
 	public String top(Model model)
 	{
+		log.info("--------------------------------------------!!!");
+		log.error("---------1eeerr----------------------------------!!!");
 		return "/background/framework/top";
 	}
-	
-	@RequestMapping ("left")
-	public String left(Model model,HttpServletRequest request)
-	{
-		try {
-			UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				        
 
-			//String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	@RequestMapping("left")
+	public String left(Model model, HttpServletRequest request)
+	{
+		try
+		{
+			UserDetails userDetails = (UserDetails) SecurityContextHolder
+					.getContext().getAuthentication().getPrincipal();
+
+			// String username = (String)
+			// SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			String username = request.getUserPrincipal().getName();
-			List<Resources> resources = resourcesService.getResourcesByUserName(username);
+			List<Resources> resources = resourcesService
+					.getResourcesByUserName(username);
 			model.addAttribute("resources", resources);
-		} catch (Exception e) {
-			//重新登录时销毁该用户的Session
+		}
+		catch (Exception e)
+		{
+			// 重新登录时销毁该用户的Session
 			request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
 		}
 		return "/background/framework/left";
 	}
-	
-	@RequestMapping ("tab")
+
+	@RequestMapping("tab")
 	public String tab(Model model)
 	{
 		return "/background/framework/tab/tab";
 	}
-	
-	@RequestMapping ("center")
+
+	@RequestMapping("center")
 	public String center(Model model)
 	{
 		return "/background/framework/center";
 	}
-	
+
 }

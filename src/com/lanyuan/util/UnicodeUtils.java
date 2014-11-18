@@ -1,6 +1,7 @@
 package com.lanyuan.util;
 
-public class UnicodeUtils {
+public class UnicodeUtils
+{
 
 	public static void main(String[] args)
 
@@ -20,7 +21,8 @@ public class UnicodeUtils {
 
 	}
 
-	public UnicodeUtils() {
+	public UnicodeUtils()
+	{
 
 	}
 
@@ -31,7 +33,8 @@ public class UnicodeUtils {
 
 	};
 
-	private static char toHex(int nibble) {
+	private static char toHex(int nibble)
+	{
 
 		return hexDigit[(nibble & 0xF)];
 
@@ -44,13 +47,15 @@ public class UnicodeUtils {
 	 * @param escapeSpace
 	 * @return
 	 */
-	public static String toUnicode(String theString, boolean escapeSpace) {
+	public static String toUnicode(String theString, boolean escapeSpace)
+	{
 
 		int len = theString.length();
 
 		int bufLen = len * 2;
 
-		if (bufLen < 0) {
+		if (bufLen < 0)
+		{
 
 			bufLen = Integer.MAX_VALUE;
 
@@ -58,7 +63,8 @@ public class UnicodeUtils {
 
 		StringBuffer outBuffer = new StringBuffer(bufLen);
 
-		for (int x = 0; x < len; x++) {
+		for (int x = 0; x < len; x++)
+		{
 
 			char aChar = theString.charAt(x);
 
@@ -66,9 +72,11 @@ public class UnicodeUtils {
 
 			// avoids the specials below
 
-			if ((aChar > 61) && (aChar < 127)) {
+			if ((aChar > 61) && (aChar < 127))
+			{
 
-				if (aChar == '\\') {
+				if (aChar == '\\')
+				{
 
 					outBuffer.append('\\');
 					outBuffer.append('\\');
@@ -83,7 +91,8 @@ public class UnicodeUtils {
 
 			}
 
-			switch (aChar) {
+			switch (aChar)
+			{
 
 			case ' ':
 
@@ -134,7 +143,8 @@ public class UnicodeUtils {
 
 			default:
 
-				if ((aChar < 0x0020) || (aChar > 0x007e)) {
+				if ((aChar < 0x0020) || (aChar > 0x007e))
+				{
 
 					outBuffer.append('\\');
 
@@ -148,7 +158,9 @@ public class UnicodeUtils {
 
 					outBuffer.append(toHex(aChar & 0xF));
 
-				} else {
+				}
+				else
+				{
 
 					outBuffer.append(aChar);
 
@@ -168,7 +180,8 @@ public class UnicodeUtils {
 	 * @param str
 	 * @return
 	 */
-	public static String fromUnicode(String str) {
+	public static String fromUnicode(String str)
+	{
 
 		return fromUnicode(str.toCharArray(), 0, str.length(), new char[1024]);
 
@@ -182,13 +195,16 @@ public class UnicodeUtils {
 	 */
 
 	public static String fromUnicode(char[] in, int off, int len,
-			char[] convtBuf) {
+			char[] convtBuf)
+	{
 
-		if (convtBuf.length < len) {
+		if (convtBuf.length < len)
+		{
 
 			int newLen = len * 2;
 
-			if (newLen < 0) {
+			if (newLen < 0)
+			{
 
 				newLen = Integer.MAX_VALUE;
 
@@ -206,25 +222,30 @@ public class UnicodeUtils {
 
 		int end = off + len;
 
-		while (off < end) {
+		while (off < end)
+		{
 
 			aChar = in[off++];
 
-			if (aChar == '\\') {
+			if (aChar == '\\')
+			{
 
 				aChar = in[off++];
 
-				if (aChar == 'u') {
+				if (aChar == 'u')
+				{
 
 					// Read the xxxx
 
 					int value = 0;
 
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < 4; i++)
+					{
 
 						aChar = in[off++];
 
-						switch (aChar) {
+						switch (aChar)
+						{
 
 						case '0':
 
@@ -294,21 +315,30 @@ public class UnicodeUtils {
 
 					out[outLen++] = (char) value;
 
-				} else {
+				}
+				else
+				{
 
-					if (aChar == 't') {
+					if (aChar == 't')
+					{
 
 						aChar = '\t';
 
-					} else if (aChar == 'r') {
+					}
+					else if (aChar == 'r')
+					{
 
 						aChar = '\r';
 
-					} else if (aChar == 'n') {
+					}
+					else if (aChar == 'n')
+					{
 
 						aChar = '\n';
 
-					} else if (aChar == 'f') {
+					}
+					else if (aChar == 'f')
+					{
 
 						aChar = '\f';
 
@@ -318,7 +348,9 @@ public class UnicodeUtils {
 
 				}
 
-			} else {
+			}
+			else
+			{
 
 				out[outLen++] = (char) aChar;
 
